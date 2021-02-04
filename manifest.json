@@ -2,14 +2,14 @@
   "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 2,
   "name": "Story points counter for Trello",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Show story points count in your Trello lanes",
   "icons": {
       "16": "icons/icon-16.png",
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
   },
-  "author": "gregoryEsberci",
+  "author": "GregoryEsberci and GuilhermeTheodoro",
   "homepage_url": "https://github.com/GregoryEsberci/story-points-counter-for-trello",
   "content_scripts": [
       {
