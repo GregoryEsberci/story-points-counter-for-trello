@@ -4,7 +4,7 @@
 
 const intervalsTimeout = {
   trelloLists: 9000,
-  trelloStoryPoints: 3000,
+  trelloStoryPoints: 3000
 }
 
 const htmlIDs = {
@@ -16,15 +16,6 @@ const htmlIDs = {
  */
 let trelloLists;
 
-
-/**
- * @param {Element} element 
- * @param {number} storyPoints
- */
-function insertStorePoints(element, storyPoints) {
-  element.textContent = `${storyPoints} Story points`
-}
-
 /**
  * @param {Element} trelloList 
  */
@@ -34,7 +25,7 @@ function getListStoryPoints(trelloList) {
   trelloList
     .querySelectorAll('[class*="plugin-color-"].badge')
     .forEach((badge) => {
-      const [icon, text] = badge.children
+      const [icon, text] = badge.children;
 
       const hasExpectedIcon = icon
         .style
@@ -44,40 +35,40 @@ function getListStoryPoints(trelloList) {
       if (hasExpectedIcon) result += +text.textContent;
     })
 
-  return result
+  return result;
 }
 
 function updateTrelloLists() {
-  trelloLists = document.querySelectorAll('.list-wrapper:not(.mod-add)');
+  trelloLists = document.querySelectorAll('#board .list-wrapper:not(.mod-add) .list');
 
   trelloLists.forEach((trelloList) => {
-    const storyPointQuantityHTML = (
-      trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`) ||
-      document.createElement('p')
-    );
+    if (trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`)) return;
+
+    const storyPointQuantityHTML = document.createElement('p');
 
     storyPointQuantityHTML.id = htmlIDs.amountStoryPointsList;
-    storyPointQuantityHTML.className = 'list-header-num-cards'
+    storyPointQuantityHTML.className = 'list-header-num-cards';
 
-    insertStorePoints(
-      storyPointQuantityHTML,
-      +document.createElement('p').textContent || 0
-    );
+    trelloList.querySelector('.list-header').appendChild(storyPointQuantityHTML);
 
-    trelloList.querySelector('.list-header').appendChild(storyPointQuantityHTML)
+    insertTotalStoryPoints(trelloList);
   })
 }
 
-function calculateStoryPoints() {
-  trelloLists.forEach((trelloList) => {
-    insertStorePoints(
-      trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`),
-      getListStoryPoints(trelloList)
-    );
-  })
+/**
+ * @param {Element} trelloList 
+ */
+function insertTotalStoryPoints(trelloList) {
+  const storyPointsTextElement = trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`);
+  const totalStoryPoints = getListStoryPoints(trelloList);
+
+  storyPointsTextElement.textContent = `${totalStoryPoints} Story points`;
 }
 
 updateTrelloLists();
 setInterval(updateTrelloLists, intervalsTimeout.trelloLists);
 
-setInterval(calculateStoryPoints, intervalsTimeout.trelloStoryPoints);
+setInterval(
+  () => trelloLists.forEach(insertTotalStoryPoints),
+  intervalsTimeout.trelloStoryPoints
+)
