@@ -10,7 +10,7 @@
       "128": "icons/icon-128.png"
   },
   "author": "gregoryEsberci",
-  "homepage_url": "https://github.com/matsuoshi/Card-counter-for-Trello",
+  "homepage_url": "https://github.com/GregoryEsberci/story-points-counter-for-trello",
   "content_scripts": [
       {
           "matches": [
