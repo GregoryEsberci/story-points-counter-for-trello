@@ -9,7 +9,7 @@
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
   },
-  "author": "GregoryEsberci and GuilhermeTheodoro",
+  "author": "GregoryEsberci and JoelGamer",
   "homepage_url": "https://github.com/GregoryEsberci/story-points-counter-for-trello",
   "content_scripts": [
       {

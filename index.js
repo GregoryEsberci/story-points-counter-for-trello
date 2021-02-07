@@ -1,74 +1,65 @@
 /**
- * Original Maintained version by Grégory Esberci @GregoryEsberci and Guilherme Theodoro @JoelGamer
- */
+  * Original Maintained version by Grégory Esberci @GregoryEsberci and Guilherme Theodoro @JoelGamer
+  */	
+const appendStoryPointElements = (storyPointsElements) => {
+  storyPointsElements.forEach((storyPointsElement, listHeader) =>
+    listHeader.appendChild(storyPointsElement)
+  );
+};
 
-const intervalsTimeout = {
-  trelloLists: 9000,
-  trelloStoryPoints: 3000
-}
+const isStoryPointsBandage = (element) => {
+  if (element.children.length !== 2) return false;
 
-const htmlIDs = {
-  amountStoryPointsList: 'total-story-points-list'
-}
+  const [icon, text] = element.children;
 
-/**
- * @type {NodeListOf<Element>}
- */
-let trelloLists;
+  if (isNaN(+text.textContent)) return false;
 
-/**
- * @param {Element} trelloList 
- */
-function getListStoryPoints(trelloList) {
-  let result = 0;
+  const hasExpectedIcon = icon.style.backgroundImage.startsWith(
+    'url("https://getcorrello.com/manifests/agiletools/images/icon-points'
+  );
 
-  trelloList
-    .querySelectorAll('[class*="plugin-color-"].badge')
-    .forEach((badge) => {
-      const [icon, text] = badge.children;
+  return hasExpectedIcon;
+};
 
-      const hasExpectedIcon = icon
-        .style
-        .backgroundImage
-        ?.startsWith('url("https://getcorrello.com/manifests/agiletools/images/icon-points-');
+const getListHeader = (listHeader) => {
+  let storyPointsTextElement = listHeader.querySelector('#total-story-points-list');
 
-      if (hasExpectedIcon) result += +text.textContent;
-    })
+  if (storyPointsTextElement) return { storyPointsTextElement, isNew: false };
 
-  return result;
-}
+  storyPointsTextElement = document.createElement('p');
 
-function updateTrelloLists() {
-  trelloLists = document.querySelectorAll('#board .list-wrapper:not(.mod-add) .list');
+  storyPointsTextElement.id = 'total-story-points-list';
+  storyPointsTextElement.className = 'list-header-num-cards';
 
-  trelloLists.forEach((trelloList) => {
-    if (trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`)) return;
+  return { storyPointsTextElement, isNew: true };
+};
 
-    const storyPointQuantityHTML = document.createElement('p');
+const updateTrelloStoryPoints = () => {
+  let storyPointsElements = new Map();
+  let hasStoryPoints = false;
 
-    storyPointQuantityHTML.id = htmlIDs.amountStoryPointsList;
-    storyPointQuantityHTML.className = 'list-header-num-cards';
+  document
+    .querySelectorAll('#content #board .list-cards')
+    .forEach((listCards) => {
+      let storyPoints = 0;
+      const listHeader = listCards.parentElement.querySelector('.list-header');
+      const { storyPointsTextElement, isNew } = getListHeader(listHeader);
 
-    trelloList.querySelector('.list-header').appendChild(storyPointQuantityHTML);
+      listCards
+        .querySelectorAll('.list-card-details [class*="plugin-color-"].badge')
+        .forEach((badge) => {
+          if (isStoryPointsBandage(badge)) {
+            storyPoints += +badge.children[1].textContent;
+            hasStoryPoints = true;
+          }
+        });
 
-    insertTotalStoryPoints(trelloList);
-  })
-}
+      storyPointsTextElement.textContent = `${storyPoints} Story points`;
 
-/**
- * @param {Element} trelloList 
- */
-function insertTotalStoryPoints(trelloList) {
-  const storyPointsTextElement = trelloList.querySelector(`#${htmlIDs.amountStoryPointsList}`);
-  const totalStoryPoints = getListStoryPoints(trelloList);
+      if (isNew) storyPointsElements.set(listHeader, storyPointsTextElement);
+    });
 
-  storyPointsTextElement.textContent = `${totalStoryPoints} Story points`;
-}
+  if (hasStoryPoints) appendStoryPointElements(storyPointsElements);
+};
 
-updateTrelloLists();
-setInterval(updateTrelloLists, intervalsTimeout.trelloLists);
-
-setInterval(
-  () => trelloLists.forEach(insertTotalStoryPoints),
-  intervalsTimeout.trelloStoryPoints
-)
+setInterval(updateTrelloStoryPoints, 1000);
