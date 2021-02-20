@@ -46,7 +46,7 @@ const updateTrelloStoryPoints = () => {
       const { storyPointsTextElement, isNew } = getListHeader(listHeader);
 
       listCards
-        .querySelectorAll('.list-card-details [class*="plugin-color-"].badge')
+        .querySelectorAll('.list-card:not(.hide) .list-card-details [class*="plugin-color-"].badge')
         .forEach((badge) => {
           if (isStoryPointsBandage(badge)) {
             storyPoints += +badge.children[1].textContent;
