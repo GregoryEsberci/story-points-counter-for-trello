@@ -15,7 +15,7 @@ const isStoryPointsBandage = (element) => {
   if (isNaN(+text.textContent)) return false;
 
   const hasExpectedIcon = icon.style.backgroundImage.startsWith(
-    'url("https://getcorrello.com/manifests/agiletools/images/icon-points'
+    'url("https://app.getcorrello.com/manifests/agiletools/images/icon-points'
   );
 
   return hasExpectedIcon;
